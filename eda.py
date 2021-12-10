@@ -92,7 +92,7 @@ if __name__ == "__main__":
     
     # collect image data
     scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver")
-    # img_urls = scraper.fetch_image_urls("cat", 5, 1)
+    img_urls = scraper.fetch_image_urls("cat", 5, 1)
     # TODO: scraper.download_images(image_urls)
     
     images = scraper.load_images_from_folder("/home/batman/Desktop/explore_ray/images")
