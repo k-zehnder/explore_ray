@@ -30,6 +30,7 @@ class Scraper:
         self.op = webdriver.ChromeOptions()
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
         self.images_folder = "/home/batman/Desktop/explore_ray/images"
+        self.images_arrays = []
         
     
     def load_images_from_folder(self):
@@ -38,7 +39,11 @@ class Scraper:
             img = cv2.imread(os.path.join(self.images_folder,filename))
             if img is not None:
                 images.append(img)
+                self.images_arrays.append(img)
         return images
+    
+    def get_images(self):
+        return self.images_arrays
     
     def fetch_image_urls(self, query:str, max_links_to_fetch:int,sleep_between_interactions:int=1):
         # build the google query
