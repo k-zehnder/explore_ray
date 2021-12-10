@@ -8,7 +8,8 @@ if __name__ == "__main__":
     # collect image data
     scraper = Scraper.remote("/home/batman/Desktop/explore_ray/chromedriver")
     print(scraper.load_images_from_folder.remote())
-    print(ray.get(scraper.get_images.remote()))
+    results = ray.get(scraper.get_images.remote())
+    print(results)
     
     # img_urls = scraper.fetch_image_urls("cat", 5, 1)
     # TODO: scraper.persist_images(image_urls)
