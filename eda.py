@@ -25,6 +25,14 @@ class Scraper:
         self.ser = Service(self.chrome_driver_path)
         self.op = webdriver.ChromeOptions()
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
+
+    def load_images_from_folder(self, folder):
+        images = []
+        for filename in os.listdir(folder):
+            img = cv2.imread(os.path.join(folder,filename))
+            if img is not None:
+                images.append(img)
+        return images
     
     def fetch_image_urls(self, query:str, max_links_to_fetch:int,sleep_between_interactions:int=1):
         # build the google query
@@ -75,13 +83,18 @@ class Scraper:
     
 
 if __name__ == "__main__":
-    # 
+    # setup "analyzers"
     sim_analyzer = SimilarityAnalyzer()
     bw_analyzer= BlackWhiteThresholdAnalyzer()
     
-    scraper = Scraper("/home/batman/Desktop/py/automate_boring_stuff/ray/chromedriver")
+    # collect image data
+    scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver")
     img_urls = scraper.fetch_image_urls("cat", 5, 1)
+    # TODO: scraper.download_images(image_urls)
+    images = scraper.load_images_from_folder
+    ("/home/batman/Desktop/explore_ray/images")
     
+    # validate images
     """
     results = {}
     for analyzer in [sim, bw]:
@@ -91,6 +104,3 @@ if __name__ == "__main__":
             results[path] = boolResult
     return results
     """
-    
-    # NOTE: like adrian...
-    # sp = SimpleImagePreprocessor(sim_analyer, bw_analyzer)
