@@ -108,6 +108,6 @@ if __name__ == "__main__":
         for path in image_paths:
             image = cv2.imread(path)
             bool_result = analyzer.isValidImage(image)
-            results[path] = boolResult
+            results[(analyzer, path)] = boolResult
     return results
     """
