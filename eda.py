@@ -28,16 +28,15 @@ class Scraper:
         self.op = webdriver.ChromeOptions()
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
 
-    @ray.remote
     def load_images_from_folder(self, folder):
         images = []
         for filename in os.listdir(folder):
             img = cv2.imread(os.path.join(folder,filename))
             if img is not None:
                 images.append(img)
+        print(images)
         return images
     
-    @ray.remote
     def fetch_image_urls(self, query:str, max_links_to_fetch:int,sleep_between_interactions:int=1):
         # build the google query
         search_url = "https://www.google.com/search?safe=off&site=&tbm=isch&source=hp&q={q}&oq={q}&gs_l=img"
@@ -93,12 +92,13 @@ if __name__ == "__main__":
     
     # collect image data
     scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver")
-    img_urls = scraper.fetch_image_urls("cat", 5, 1)
+    # img_urls = scraper.fetch_image_urls("cat", 5, 1)
     # TODO: scraper.download_images(image_urls)
     
-    images = scraper.load_images_from_folder
-    ("/home/batman/Desktop/explore_ray/images")
-    print(images)
+    images = scraper.load_images_from_folder("/home/batman/Desktop/explore_ray/images")
+    cv2.imshow("Default window", images[0])
+    cv2.waitKey(1000)
+    cv2.destroyAllWindows()
     
     
     # validate images
