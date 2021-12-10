@@ -1,3 +1,4 @@
+import ray
 import os
 import cv2
 from abc import ABC, abstractmethod
@@ -5,6 +6,7 @@ from abc import ABC, abstractmethod
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from tqdm import tqdm
 
 class ImageValidator(ABC):
     @abstractmethod
@@ -26,6 +28,7 @@ class Scraper:
         self.op = webdriver.ChromeOptions()
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
 
+    @ray.remote
     def load_images_from_folder(self, folder):
         images = []
         for filename in os.listdir(folder):
@@ -34,6 +37,7 @@ class Scraper:
                 images.append(img)
         return images
     
+    @ray.remote
     def fetch_image_urls(self, query:str, max_links_to_fetch:int,sleep_between_interactions:int=1):
         # build the google query
         search_url = "https://www.google.com/search?safe=off&site=&tbm=isch&source=hp&q={q}&oq={q}&gs_l=img"
@@ -91,8 +95,11 @@ if __name__ == "__main__":
     scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver")
     img_urls = scraper.fetch_image_urls("cat", 5, 1)
     # TODO: scraper.download_images(image_urls)
+    
     images = scraper.load_images_from_folder
     ("/home/batman/Desktop/explore_ray/images")
+    print(images)
+    
     
     # validate images
     """
