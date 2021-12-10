@@ -4,6 +4,7 @@ import cv2
 from abc import ABC, abstractmethod
 
 import time
+import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from tqdm import tqdm
@@ -21,20 +22,22 @@ class BlackWhiteThresholdAnalyzer(ImageValidator):
     def isValidImage(self):
         pass
     
+@ray.remote 
 class Scraper:
     def __init__(self, chrome_driver_path):
         self.chrome_driver_path = chrome_driver_path
         self.ser = Service(self.chrome_driver_path)
         self.op = webdriver.ChromeOptions()
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
-
-    def load_images_from_folder(self, folder):
+        self.images_folder = "/home/batman/Desktop/explore_ray/images"
+        
+    
+    def load_images_from_folder(self):
         images = []
-        for filename in os.listdir(folder):
-            img = cv2.imread(os.path.join(folder,filename))
+        for filename in os.listdir(self.images_folder):
+            img = cv2.imread(os.path.join(self.images_folder,filename))
             if img is not None:
                 images.append(img)
-        print(images)
         return images
     
     def fetch_image_urls(self, query:str, max_links_to_fetch:int,sleep_between_interactions:int=1):
@@ -109,30 +112,3 @@ def persist_image(folder_path: str, url: str):
     except Exception as e:
         print(f"ERROR - Could not save {url} - {e}")
 """
-
-if __name__ == "__main__":
-    # setup "analyzers"
-    sim_analyzer = SimilarityAnalyzer()
-    bw_analyzer= BlackWhiteThresholdAnalyzer()
-    
-    # collect image data
-    scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver")
-    img_urls = scraper.fetch_image_urls("cat", 5, 1)
-    # TODO: scraper.download_images(image_urls)
-    
-    images = scraper.load_images_from_folder("/home/batman/Desktop/explore_ray/images")
-    cv2.imshow("Default window", images[0])
-    cv2.waitKey(1000)
-    cv2.destroyAllWindows()
-    
-    
-    # validate images
-    """
-    results = {}
-    for analyzer in [sim, bw]:
-        for path in image_paths:
-            image = cv2.imread(path)
-            bool_result = analyzer.isValidImage(image)
-            results[(analyzer, path)] = boolResult
-    return results
-    """
