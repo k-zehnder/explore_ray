@@ -83,7 +83,32 @@ class Scraper:
                 results_start = len(thumbnail_results)
 
         return image_urls
-    
+
+"""
+def persist_image(folder_path: str, url: str):
+    try:
+        print("Getting image")
+        # Download the image.  If timeout is exceeded, throw an error.
+        with timeout(GET_IMAGE_TIMEOUT):
+            image_content = requests.get(url).content
+
+    except Exception as e:
+        print(f"ERROR - Could not download {url} - {e}")
+
+    try:
+        # Convert the image into a bit stream, then save it.
+        image_file = io.BytesIO(image_content)
+        image = Image.open(image_file).convert("RGB")
+        # Create a unique filepath from the contents of the image.
+        file_path = os.path.join(
+            folder_path, hashlib.sha1(image_content).hexdigest()[:10] + ".jpg"
+        )
+        with open(file_path, "wb") as f:
+            image.save(f, "JPEG", quality=IMAGE_QUALITY)
+        print(f"SUCCESS - saved {url} - as {file_path}")
+    except Exception as e:
+        print(f"ERROR - Could not save {url} - {e}")
+"""
 
 if __name__ == "__main__":
     # setup "analyzers"
