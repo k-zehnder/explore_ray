@@ -1,12 +1,7 @@
 from ray_classes import *
 from non_ray_classes import *
 import time
-
-def percentage_change(current, previous):
-    if previous != 0 :
-        return int(float(current - previous) / abs(previous) * 100)
-    else:
-        return "undefined"
+import pandas as pd
 
 if __name__ == "__main__":
     # collect image data *without* ray
@@ -16,7 +11,6 @@ if __name__ == "__main__":
         scraper.load_images_from_folder()
     default_duration = time.perf_counter() - start
     print(f'NO RAY: {default_duration * 1000:.1f}ms')
-
     
     # collect image data *with* ray
     ray.init()
@@ -27,7 +21,11 @@ if __name__ == "__main__":
     ray_duration = time.perf_counter() - start
     print(f'WITH RAY: {ray_duration * 1000:.1f}ms')
     ray.shutdown()
-    print(f'RAY is {percentage_change(default_duration, ray_duration)}% faster.')
+    
+    
+    times = pd.Series([default_duration, ray_duration])
+    pct_change = abs(times.pct_change().to_list()[1])
+    print(f'RAY is {pct_change}% faster.')
 
     # setup "analyzers"
     sim_analyzer = SimilarityAnalyzer()
