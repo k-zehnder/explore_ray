@@ -1,4 +1,4 @@
-import ray
+# import ray
 import os
 import cv2
 from abc import ABC, abstractmethod
@@ -22,12 +22,12 @@ class BlackWhiteThresholdAnalyzer(ImageValidator):
     def isValidImage(self):
         pass
     
-@ray.remote 
 class Scraper:
-    def __init__(self, chrome_driver_path):
+    def __init__(self, chrome_driver_path, headless=True):
         self.chrome_driver_path = chrome_driver_path
         self.ser = Service(self.chrome_driver_path)
         self.op = webdriver.ChromeOptions()
+        self.op.add_argument("--headless") if headless == True else None
         self.wd = webdriver.Chrome(service=self.ser, options=self.op)
         self.images_folder = "/home/batman/Desktop/explore_ray/images"
         self.images_arrays = []

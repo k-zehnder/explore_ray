@@ -1,16 +1,41 @@
-from classes import *
+from ray_classes import *
+from non_ray_classes import *
+import time
+
+def percentage_change(current, previous):
+    if previous != 0 :
+        return int(float(current - previous) / abs(previous) * 100)
+    else:
+        return "undefined"
 
 if __name__ == "__main__":
     # setup "analyzers"
     sim_analyzer = SimilarityAnalyzer()
     bw_analyzer= BlackWhiteThresholdAnalyzer()
+
+    # collect image data with ray
+    start = time.perf_counter()
+    scraper = Scraper("/home/batman/Desktop/explore_ray/chromedriver", headless=True)
+    for i in range(10):
+        scraper.load_images_from_folder()
+    # results = scraper.get_images()
+    # print(len(results))
+    default_duration = time.perf_counter() - start
+    print(f'NO RAY: {default_duration * 1000:.1f}ms')
+
     
-    # collect image data
-    scraper = Scraper.remote("/home/batman/Desktop/explore_ray/chromedriver")
-    print(scraper.load_images_from_folder.remote())
-    results = ray.get(scraper.get_images.remote())
-    print(results)
-    
+    # collect image data with ray
+    ray.init()
+    start = time.perf_counter()
+    scraper = Ray_Scraper.remote("/home/batman/Desktop/explore_ray/chromedriver", headless=True)
+    for i in range(10):
+        scraper.load_images_from_folder.remote()
+    # results = ray.get(scraper.get_images.remote())
+    # print(len(results))
+    ray_duration = time.perf_counter() - start
+    print(f'WITH RAY: {ray_duration * 1000:.1f}ms')
+    ray.shutdown()
+    print(f'RAY is {percentage_change(default_duration, ray_duration)}% faster.')
     # img_urls = scraper.fetch_image_urls("cat", 5, 1)
     # TODO: scraper.persist_images(image_urls)
     
